@@ -10,6 +10,7 @@ app.use(express.json());
 
 require('./routes/bank.routes')(app);
 require('./routes/user.routes')(app);
+require('./routes/pixKey.routes')(app);
 
 const HOSTNAME = '127.0.0.1';
 const PORT     = 8080;
