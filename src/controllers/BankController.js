@@ -1,12 +1,20 @@
 const Bank = require('../models/Bank');
+const PixKey = require('../models/PixKey');
 const User = require('../models/User');
 
 module.exports = {
   async index(req, res) {
-    const { user_id } = req.params;
+    const { user_id, bank_id } = req.params;
 
     const user = await User.findByPk(user_id, {
-      include: { association: 'banks' }
+      include: {
+        model: Bank,
+        as: 'banks',
+        include: {
+          model: PixKey,
+          as: 'pix_keys'
+        },
+      }
     });
 
     if(!user) {
