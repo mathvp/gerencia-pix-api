@@ -1,6 +1,7 @@
 const Bank = require('../models/Bank');
 const PixKey = require('../models/PixKey');
 const User = require('../models/User');
+const sequelize = require('../database');
 
 module.exports = {
   async index(req, res) {
@@ -28,7 +29,7 @@ module.exports = {
     const { user_id } = req.params;
     const { name, image_url } = req.body;
 
-    const user = User.findByPk(user_id);
+    const user = await User.findByPk(user_id);
 
     if(!user) {
       return res.status(400).json({ error: 'User not found! ' });
@@ -41,5 +42,31 @@ module.exports = {
     });
 
     return res.status(200).json(bank);
-  }
+  },
+
+  async index2(req, res) {
+
+  },
+
+  async store2(req, res) {
+    const { user_id } = req.params;
+    const { code, image_url, alias } = req.body;
+
+    const user = await User.findByPk(user_id);
+
+    if(!user) {
+      return res.status(400).json({ error: 'User not found! ' });
+    }
+
+    const [ bank ] = await Bank.findOrCreate({
+      where: { code },
+      defaults: { code, image_url, alias }
+    });
+
+    await sequelize.sync();
+
+    await user.addBank(bank);
+
+    return res.status(200).json(bank);
+  },
 };
