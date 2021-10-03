@@ -9,23 +9,23 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
-      value: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-      },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'users', key: 'id' },
+        references: { model: 'user_banks', key: 'fk_user_id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      bank_id: {
+      bank_code: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'banks', key: 'id' },
+        references: { model: 'user_banks', key: 'fk_bank_code' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
+      },
+      value: {
+        type: Sequelize.STRING(45),
+        allowNull: false,
       },
       created_at: {
         type: Sequelize.DATE,

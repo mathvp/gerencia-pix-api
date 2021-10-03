@@ -16,6 +16,7 @@ class UserBanks extends Model {
     }, {
       sequelize,
       tableName: 'user_banks',
+      modelName: 'user_banks',
     });
   }
 }

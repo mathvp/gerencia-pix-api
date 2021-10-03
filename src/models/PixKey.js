@@ -10,8 +10,8 @@ class PixKey extends Model {
   }
 
   static associate(models) {
-    this.belongsTo(models.User, { foreignKey: 'user_id', as: 'user' });
-    this.belongsTo(models.Bank, { foreignKey: 'bank_id', as: 'bank' });
+    this.belongsTo(models.User, { foreignKey: 'user_id', through: 'user_banks', as: 'users' });
+    this.belongsTo(models.Bank, { foreignKey: 'bank_code', through: 'user_banks', as: 'banks' });
   }
 }
 
