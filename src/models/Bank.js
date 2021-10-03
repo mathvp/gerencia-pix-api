@@ -16,7 +16,7 @@ class Bank extends Model {
   }
 
   static associate(models) {
-    this.belongsToMany(models.User, { foreignKey: 'fk_bank_code', through: 'user_banks', as: 'users' });
+    this.belongsToMany(models.User, { foreignKey: 'fk_bank_code', through: models.UserBanks, as: 'users' });
   }
 }
 
