@@ -35,10 +35,10 @@ function formatBanksResponseData(rawBankData) {
     tempBank.image = bank.image_url;
 
     if (bank.custom_bank_data.length > 0 ) {
-      tempBank.name = bank.custom_bank_data[0].custom_bank_name;
-      tempBank.image = bank.custom_bank_data[0].custom_bank_image_url;
-      tempBank.color = bank.custom_bank_data[0].custom_bank_color;
-      tempBank.order = bank.custom_bank_data[0].custom_bank_order;
+      tempBank.name = bank.custom_bank_data[0].custom_bank_name ? bank.custom_bank_data[0].custom_bank_name : tempBank.name;
+      tempBank.image = bank.custom_bank_data[0].custom_bank_image_url ? bank.custom_bank_data[0].custom_bank_image_url : tempBank.image;
+      tempBank.color = bank.custom_bank_data[0].custom_bank_color ? bank.custom_bank_data[0].custom_bank_color : tempBank.color;
+      tempBank.order = bank.custom_bank_data[0].custom_bank_order ? bank.custom_bank_data[0].custom_bank_order : tempBank.order;
     }
 
     tempBank.pix_keys = bank.pix_keys
