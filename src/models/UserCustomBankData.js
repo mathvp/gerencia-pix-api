@@ -9,8 +9,7 @@ class UserCustomBankData extends Model {
       custom_bank_order: DataTypes.INTEGER,
     }, {
       sequelize,
-      tableName: 'user_custom_banks_data',
-      modelName: 'user_custom_banks_data'
+      tableName: 'user_custom_banks_data'
     });
   }
 

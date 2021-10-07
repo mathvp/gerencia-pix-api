@@ -1,22 +1,23 @@
 const User = require('../models/User');
+const Bank = require('../models/Bank');
 const UserCustomBankData = require('../models/UserCustomBankData');
 
 module.exports = {
   async index(req, res) {
-    const { user_id, bank_id } = req.params;
+    const { user_id, bank_code } = req.params;
 
-    const user = await User.findByPk(user_id, {
-      include: {
-        association: '',
-        where: { bank_id }
+    const custom_bank_data = await UserCustomBankData.findOne({
+      where: {
+        user_id,
+        bank_code
       }
     });
 
-    if(!user) {
+    if(!custom_bank_data) {
       return res.status(400).json({ error: 'User or Bank not found! ' });
     }
 
-    return res.status(200).json(user);
+    return res.status(200).json(custom_bank_data);
   },
 
   async store(req, res) {
