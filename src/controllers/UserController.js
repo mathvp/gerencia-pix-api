@@ -16,8 +16,8 @@ module.exports = {
       return res.status(400).send({ error: "Bad request" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    password = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // password = await bcrypt.hash(password, salt);
 
     await User.create({
       first_name,

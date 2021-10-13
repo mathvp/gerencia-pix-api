@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const { Model, DataTypes } = require('sequelize');
 
 class User extends Model {
@@ -8,7 +9,14 @@ class User extends Model {
       email:      DataTypes.STRING(45),
       password:   DataTypes.STRING(82),
     }, {
-      sequelize
+      sequelize,
+      hooks: {
+        beforeSave: async user => {
+          const salt = await bcrypt.genSalt(10);
+          const password = await bcrypt.hash(user.password, salt);
+          user.password = password;
+        }
+      }
     });
   }
 

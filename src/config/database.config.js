@@ -1,9 +1,14 @@
-require('dotenv').config();
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ?  '.env.test' : '.env'
+});
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = process.env;
 
+console.log(process.env.DB_DIALECT)
+
 module.exports = {
-  dialect: 'mysql',
+  dialect: process.env.DB_DIALECT || 'mysql',
+  storage: './__tests__/database.sqlite',
   host: DB_HOST,
   port: DB_PORT,
   username: DB_USER,
