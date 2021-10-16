@@ -3,20 +3,20 @@ const PixKey = require('../models/PixKey');
 
 module.exports = {
   async index(req, res) {
-    const { user_id, bank_id } = req.params;
+    const { user_id, bank_code } = req.params;
 
-    const user = await User.findByPk(user_id, {
-      include: {
-        association: 'pix_keys',
-        where: { bank_id }
+    const pix_keys = await PixKey.findAll({
+      where: {
+        user_id,
+        bank_code
       }
     });
 
-    if(!user) {
+    if(!pix_keys) {
       return res.status(400).json({ error: 'User or Bank not found! ' });
     }
 
-    return res.status(200).json(user.pix_keys);
+    return res.status(200).json(pix_keys);
   },
 
   async store(req, res) {

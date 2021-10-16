@@ -1,0 +1,520 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Gerencia PIX",
+    "description": "API Gerencia PIX",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API de Teste e Produção"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Criar usuário",
+        "description": "Essa rota é responsável pela criação de Usuários",
+        "tags": ["Usuários"],
+        "operationId": "addUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com os valores do Usuário que será adicionado",
+            "required": true,
+            "schema": {
+              "$ref":"#/components/schemas/NewUser"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/NewUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/banks": {
+      "get": {
+        "summary": "Listar todos os Bancos disponíveis",
+        "description": "Essa rota é responsável pela listagem de Bancos utilizada no Dropdown e informações referentes aos bancos",
+        "tags": ["Bancos"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Bank"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/banks": {
+      "post": {
+        "summary": "Salvar um Banco para um usuário específico referenciado pelo user_id",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "addUserBank",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com os valores do Banco que será adicionado",
+            "required": true,
+            "schema": {
+              "$ref":"#/components/schemas/UserNewBankRequest"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UserNewBankRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/UserNewBankResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retorna uma lista de Bancos pertencentes à um usuário específico referenciado pelo user_id",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "getUserBank",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserBanksResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      }
+    },
+    "/users/{user_id}/banks/{bank_code}/custom": {
+      "get": {
+        "summary": "Retorna os dados personalizados de um Banco para um Usuário",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "getCustomBankData",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": { "type":"number" }
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco desejado",
+            "required": true,
+            "schema": { "type":"number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomBankDataResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Salvar os dados Personalizados de um Banco para um usuário específico referenciado pelo user_id",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "addCustomBankData",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco desejado",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com os dados personalizados do Banco desejado",
+            "required": true,
+            "schema": {
+              "$ref":"#/components/schemas/CustomBankDataRequest"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/CustomBankDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/CustomBankDataResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário ou Banco não encontrado"
+          }
+        }
+      }
+    },
+    "/users/{user_id}/banks/{bank_code}/pix-keys": {
+      "post": {
+        "summary": "Salvar uma Chave Pix para um usuário específico referenciado pelo user_id",
+        "description": "",
+        "tags": ["Chave Pix"],
+        "operationId": "addPixKey",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco para qual a Chave Pix será salva",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com o valor da Chave Pix que será salva",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/PixKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário ou Banco não encontrado"
+          }
+        }
+      },
+      "get": {
+        "summary": "Retorna uma lista de Chaves Pix de um Banco para um usuário",
+        "description": "",
+        "tags": ["Chave Pix"],
+        "operationId": "getUserBankPixKeys",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "description": "ID do usuário dono do recurso",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco que contém as Chaves Pix",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PixKey"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NewUser": {
+        "type": "object",
+        "properties": {
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        }
+      },
+      "NewUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "Bank": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "longName": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      },
+      "UserNewBankRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "number"
+          },
+          "custom_bank_name": {
+            "type": "string"
+          },
+          "custom_bank_color": {
+            "type": "string"
+          },
+          "custom_bank_image_url": {
+            "type": "string"
+          },
+          "custom_bank_order": {
+            "type": "number"
+          }
+        }
+      },
+      "UserNewBankResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "bank_code": {
+            "type": "number"
+          },
+          "user_id": {
+            "type": "number"
+          },
+          "custom_bank_name": {
+            "type": "string"
+          },
+          "custom_bank_color": {
+            "type": "string"
+          },
+          "custom_bank_image_url": {
+            "type": "string"
+          },
+          "custom_bank_order": {
+            "type": "number"
+          }
+        }
+      },
+      "UserBanksResponse": {
+        "type":"object",
+        "properties": {
+          "code": { "type": "number" },
+          "name": { "type": "string" },
+          "longName": { "type": "string" },
+          "image": { "type": "string" },
+          "color": { "type": "string" },
+          "order": { "type": "number" },
+          "pix_keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PixKey"
+            }
+          }
+        }
+      },
+      "PixKey": {
+        "type":"object",
+        "properties": {
+          "id": { "type": "number" },
+          "bank_code": { "type": "number" },
+          "user_id": { "type": "number" },
+          "value": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      },
+      "CustomBankDataRequest": {
+        "type": "object",
+        "properties": {
+          "custom_bank_name": { "type": "string" },
+          "custom_bank_color": { "type": "string" },
+          "custom_bank_image_url": { "type": "string" },
+          "custom_bank_order": { "type": "number" }
+        }
+      },
+      "CustomBankDataResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number" },
+          "bank_code": { "type": "number" },
+          "user_id": { "type": "number" },
+          "custom_bank_name": { "type": "string" },
+          "custom_bank_color": { "type": "string" },
+          "custom_bank_image_url": { "type": "string" },
+          "custom_bank_order": { "type": "number" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        }
+      }
+    }
+  }
+}
