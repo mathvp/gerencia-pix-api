@@ -1,5 +1,7 @@
 const User = require('../models/User');
 
+const jwt = require('jsonwebtoken');
+const config = require('../config/auth.config');
 const bcrypt = require('bcrypt');
 
 module.exports = {
@@ -31,5 +33,63 @@ module.exports = {
       return res.status(500).send({ error: "Houve um erro ao criar o usuário" });
     });
 
+  },
+
+  async login(req, res) {
+
+    try {
+      const { email, password } = req.body;
+
+      if (email == undefined || email == null || password == undefined || password == null) {
+        return res.status(401).json({ error: "Usuário ou senha incorretos" });
+      }
+
+      const user = await User.findOne({
+        where: {
+          email
+        }
+      }).then(user => {
+
+        if (!user) {
+          return res.status(401).json({ error: "Usuário ou senha incorretos" });
+        }
+
+        const isPasswordValid = bcrypt.compareSync(
+          password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return res.status(401).send({
+            accessToken: null,
+            error: "Usuário ou senha incorretos"
+          });
+        }
+
+        const token = jwt.sign({ id: user.id }, `${config.secret}`, {
+          expiresIn: 86400 // 24 hours
+        });
+
+        return res.status(200).json({
+          id: user.id,
+          email: user.email,
+          accessToken: token
+        });
+
+      }).catch(error => {
+        console.log(error);
+        return res.status(500).json({ error: "Erro interno no servidor" });
+      });
+
+
+    } catch(error) {
+      console.log(error);
+    }
+  },
+
+  async logout(req, res) {
+    return res.status(200).json({
+      accessToken: null
+    });
   }
 };
