@@ -11,25 +11,25 @@ module.exports = function (app) {
   });
 
   app.post(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/pix-keys`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/pix-keys`,
     [authJwt.verifyToken],
     PixKeyController.store
   );
 
   app.get(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/pix-keys`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/pix-keys`,
     [authJwt.verifyToken],
     PixKeyController.index
   );
 
   app.delete(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/:pix_key_id`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/:pix_key_id`,
     [authJwt.verifyToken],
     PixKeyController.delete
   );
 
   app.put(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/:pix_key_id`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/:pix_key_id`,
     [authJwt.verifyToken],
     PixKeyController.update
   );

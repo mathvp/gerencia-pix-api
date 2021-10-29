@@ -51,7 +51,7 @@ function formatBanksResponseData(rawBankData) {
 
 module.exports = {
   async index(req, res) {
-    const { user_id } = req.params;
+    const user_id = req.userId;
 
     const user = await User.findByPk(user_id, {
       include: {
@@ -78,7 +78,7 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { user_id } = req.params;
+    const user_id = req.userId;
     const { code, custom_bank_name, custom_bank_color, custom_bank_image_url, custom_bank_order } = req.body;
 
     const user = await User.findByPk(user_id);

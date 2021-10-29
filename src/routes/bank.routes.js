@@ -13,13 +13,13 @@ module.exports = function (app) {
   });
 
   app.post(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks`,
+    `/api/${process.env.API_VERSION}/users/banks`,
     [authJwt.verifyToken],
     BankController.store
   );
 
   app.get(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks`,
+    `/api/${process.env.API_VERSION}/users/banks`,
     [authJwt.verifyToken],
     BankController.index
   );
@@ -31,13 +31,13 @@ module.exports = function (app) {
   );
 
   app.get(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/custom`,
     [authJwt.verifyToken],
     UserCustomBankDataController.index
   );
 
   app.post(
-    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code/custom`,
     [authJwt.verifyToken],
     UserCustomBankDataController.store
   );

@@ -3,7 +3,8 @@ const PixKey = require('../models/PixKey');
 
 module.exports = {
   async index(req, res) {
-    const { user_id, bank_code } = req.params;
+    const { bank_code } = req.params;
+    const user_id = req.userId;
 
     const pix_keys = await PixKey.findAll({
       where: {
@@ -20,8 +21,9 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { user_id, bank_code } = req.params;
+    const { bank_code } = req.params;
     const { value } = req.body;
+    const user_id = req.userId;
 
     const user = await User.findByPk(user_id, {
       include: {
@@ -44,7 +46,8 @@ module.exports = {
   },
 
   async delete(req, res) {
-    const { user_id, bank_code, pix_key_id } = req.params;
+    const { bank_code, pix_key_id } = req.params;
+    const user_id = req.userId;
 
     try {
       const deleted = await PixKey.destroy({
@@ -68,8 +71,9 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { user_id, bank_code, pix_key_id } = req.params;
+    const { bank_code, pix_key_id } = req.params;
     const { value } = req.body;
+    const user_id = req.userId;
 
     try {
       await PixKey.update({
