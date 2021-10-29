@@ -1,3 +1,4 @@
+const { authJwt } = require('../middlewares');
 const UserController = require('../controllers/UserController');
 
 module.exports = function (app) {
@@ -9,8 +10,21 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`/api/${process.env.API_VERSION}/users`, UserController.store);
-  app.post(`/api/${process.env.API_VERSION}/users/login`, UserController.login);
+  app.post(
+    `/api/${process.env.API_VERSION}/users`,
+    [],
+    UserController.store
+  );
 
-  app.post(`/api/${process.env.API_VERSION}/users/logout`, UserController.logout);
+  app.post(
+    `/api/${process.env.API_VERSION}/users/login`,
+    [],
+    UserController.login
+  );
+
+  app.post(
+    `/api/${process.env.API_VERSION}/users/logout`,
+    [authJwt.verifyToken],
+    UserController.logout
+  );
 }

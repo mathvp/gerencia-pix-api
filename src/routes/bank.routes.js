@@ -1,13 +1,44 @@
+const { authJwt } = require('../middlewares');
 const BankController = require('../controllers/BankController');
 const BankListController = require('../controllers/BankListController');
 const UserCustomBankDataController = require('../controllers/UserCustomBankDataController');
 
 module.exports = function (app) {
-  app.post(`/api/${process.env.API_VERSION}/users/:user_id/banks`, BankController.store);
-  app.get(`/api/${process.env.API_VERSION}/users/:user_id/banks`, BankController.index);
+  app.use(function(req, res, next) {
+    res.header(
+      "Access-Control-Allow-Headers",
+      "x-access-token, Origin, Content-Type, Accept"
+    );
+    next();
+  });
 
-  app.get(`/api/${process.env.API_VERSION}/banks`, BankListController.index);
+  app.post(
+    `/api/${process.env.API_VERSION}/users/:user_id/banks`,
+    [authJwt.verifyToken],
+    BankController.store
+  );
 
-  app.get(`/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`, UserCustomBankDataController.index);
-  app.post(`/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`, UserCustomBankDataController.store);
+  app.get(
+    `/api/${process.env.API_VERSION}/users/:user_id/banks`,
+    [authJwt.verifyToken],
+    BankController.index
+  );
+
+  app.get(
+    `/api/${process.env.API_VERSION}/banks`,
+    [authJwt.verifyToken],
+    BankListController.index
+  );
+
+  app.get(
+    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`,
+    [authJwt.verifyToken],
+    UserCustomBankDataController.index
+  );
+
+  app.post(
+    `/api/${process.env.API_VERSION}/users/:user_id/banks/:bank_code/custom`,
+    [authJwt.verifyToken],
+    UserCustomBankDataController.store
+  );
 }

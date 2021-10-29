@@ -42,4 +42,58 @@ module.exports = {
 
     return res.status(200).json(pix_key);
   },
+
+  async delete(req, res) {
+    const { user_id, bank_code, pix_key_id } = req.params;
+
+    try {
+      const deleted = await PixKey.destroy({
+        where: {
+          id: pix_key_id,
+          user_id,
+          bank_code
+        }
+      });
+
+      if(!deleted) {
+        return res.status(404).json({ msg: 'Chave Pix não encontrada' });
+      }
+
+      return res.status(200).json({ msg: 'Chave Pix excluída com sucesso' });
+
+    } catch(error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'Erro ao excluir a Chave Pix' });
+    }
+  },
+
+  async update(req, res) {
+    const { user_id, bank_code, pix_key_id } = req.params;
+    const { value } = req.body;
+
+    try {
+      await PixKey.update({
+          value
+        },
+        {
+          where: {
+            id: pix_key_id,
+            user_id,
+            bank_code
+          }
+      }).then(count => {
+        if(count > 0) {
+          return res.status(200).json({ msg: `${ count } Chave Pix atualizada!` });
+        }
+
+        console.log('Value: ', value)
+
+        return res.status(404).json({ error: 'Chave Pix ou Banco não encontrado!' });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: 'Chave Pix ou Banco não encontrado!' });
+    }
+
+  }
 };
