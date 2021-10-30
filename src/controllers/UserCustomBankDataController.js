@@ -4,7 +4,8 @@ const UserCustomBankData = require('../models/UserCustomBankData');
 
 module.exports = {
   async index(req, res) {
-    const { user_id, bank_code } = req.params;
+    const { bank_code } = req.params;
+    const user_id = req.userId;
 
     const custom_bank_data = await UserCustomBankData.findOne({
       where: {
@@ -21,7 +22,8 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { user_id, bank_code } = req.params;
+    const { bank_code } = req.params;
+    const user_id = req.userId;
     const { custom_bank_name, custom_bank_color, custom_bank_image_url, custom_bank_order } = req.body;
 
     const user = await User.findByPk(user_id, {
@@ -46,4 +48,23 @@ module.exports = {
 
     return res.status(200).json(custom_bank_data);
   },
+
+  async sortOrder(req, res) {
+    const user_id = req.userId;
+    const { newOrders } = req.body;
+
+    try {
+      newOrders.forEach(bank => {
+        UserCustomBankData.update({ custom_bank_order: bank.order },
+          {
+            where: { bank_code: bank.code, user_id }
+          });
+      });
+
+      return res.status(200).json({ msg: 'ok' });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: 'Banco não encontrado!' });
+    }
+  }
 };

@@ -41,4 +41,10 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     UserCustomBankDataController.store
   );
+
+  app.put(
+    `/api/${process.env.API_VERSION}/users/banks`,
+    [authJwt.verifyToken],
+    UserCustomBankDataController.sortOrder
+  );
 }

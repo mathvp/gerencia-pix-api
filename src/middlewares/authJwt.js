@@ -17,14 +17,6 @@ verifyToken = (req, res, next) => {
         error: "Unauthorized!"
       });
     }
-
-    if(typeof req.params.user_id != 'undefined') {
-      if (req.params.user_id != decoded.id) {
-        return res.status(401).send({
-          error: "Unauthorized!"
-        });
-      }
-    }
     req.userId = decoded.id;
     next();
   });

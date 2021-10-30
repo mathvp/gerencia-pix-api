@@ -67,7 +67,10 @@ module.exports = {
             as: 'custom_bank_data'
           }
         ]
-      }
+      },
+      order:[
+        ['banks', 'custom_bank_data', 'custom_bank_order', 'asc']
+      ]
     });
 
     if(!user) {

@@ -90,8 +90,6 @@ module.exports = {
           return res.status(200).json({ msg: `${ count } Chave Pix atualizada!` });
         }
 
-        console.log('Value: ', value)
-
         return res.status(404).json({ error: 'Chave Pix ou Banco não encontrado!' });
       });
     } catch (error) {
