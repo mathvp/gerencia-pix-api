@@ -52,11 +52,16 @@ function formatBanksResponseData(rawBankData) {
 module.exports = {
   async index(req, res) {
     const user_id = req.userId;
+    const { bank_code } = req.params;
+    const where_conditions = bank_code? { code: bank_code } : {}
+
+    console.log(where_conditions)
 
     const user = await User.findByPk(user_id, {
       include: {
         model: Bank,
         as: 'banks',
+        where: where_conditions,
         include: [
           {
             model: PixKey,
@@ -107,5 +112,34 @@ module.exports = {
     });
 
     return res.status(200).json(custom_bank_data);
+  },
+
+  async delete(req, res) {
+    const { bank_code } = req.params;
+    const user_id = req.userId;
+
+    try {
+      const user = await User.findByPk(user_id);
+
+      if(!user) {
+        return res.status(404).json({ error: 'User not found! ' });
+      }
+
+      const bank = await Bank.findOne({
+        where: { code: bank_code }
+      });
+
+      if(!bank) {
+        return res.status(404).json({ msg: 'Banco não encontrado' });
+      }
+
+      await user.removeBank(bank);
+
+      return res.status(200).json({ msg: 'Banco excluído com sucesso' });
+
+    } catch(error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'Erro ao excluir o Banco' });
+    }
   },
 };

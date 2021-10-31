@@ -64,6 +64,32 @@ module.exports = {
       return res.status(200).json({ msg: 'ok' });
     } catch (error) {
       console.log(error);
+      return res.status(404).json({ error: 'Banco não encontrado!' });
+    }
+  },
+
+  async update(req, res) {
+    const { bank_code } = req.params;
+    const { code, custom_bank_name, custom_bank_color, custom_bank_image_url } = req.body;
+    const user_id = req.userId;
+
+    if (bank_code != code || bank_code == '' || typeof bank_code === 'undefined') {
+      return res.status(404).json({ error: 'Banco não encontrado!' });
+    }
+
+    try {
+      UserCustomBankData.update({
+          custom_bank_name,
+          custom_bank_color,
+          custom_bank_image_url
+        },
+        {
+          where: { bank_code: code, user_id }
+        });
+
+      return res.status(200).json({ msg: 'ok' });
+    } catch (error) {
+      console.log(error);
       return res.status(400).json({ error: 'Banco não encontrado!' });
     }
   }

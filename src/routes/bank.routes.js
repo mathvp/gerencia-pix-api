@@ -19,7 +19,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    `/api/${process.env.API_VERSION}/users/banks`,
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code?`,
     [authJwt.verifyToken],
     BankController.index
   );
@@ -46,5 +46,17 @@ module.exports = function (app) {
     `/api/${process.env.API_VERSION}/users/banks`,
     [authJwt.verifyToken],
     UserCustomBankDataController.sortOrder
+  );
+
+  app.put(
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code`,
+    [authJwt.verifyToken],
+    UserCustomBankDataController.update
+  );
+
+  app.delete(
+    `/api/${process.env.API_VERSION}/users/banks/:bank_code`,
+    [authJwt.verifyToken],
+    BankController.delete
   );
 }
