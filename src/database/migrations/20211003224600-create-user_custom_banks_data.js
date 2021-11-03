@@ -9,17 +9,10 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
-      user_id: {
+      user_banks_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'user_banks', key: 'fk_user_id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
-      bank_code: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: { model: 'user_banks', key: 'fk_bank_code' },
+        references: { model: 'user_banks', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },

@@ -1,17 +1,23 @@
 const Bank = require('../models/Bank');
 const PixKey = require('../models/PixKey');
 const User = require('../models/User');
+const UserBanks = require('../models/UserBanks');
 const UserCustomBankData = require('../models/UserCustomBankData');
+
 const bankList = require('bancos-brasileiros');
 
 function getBankFromList(bankCode) {
   return bankList.find(bank => bank.COMPE == bankCode)
 }
 
-function formatBanksResponseData(rawBankData) {
-  const newBankData = [];
+function getCustomBankData(userBanks, userBankId) {
+  return userBanks.find( userBank => userBank.id === userBankId );
+}
 
-  rawBankData.forEach(bank => {
+function formatBanksResponseData(rawBankData) {
+  const newBankData = new Array(rawBankData.banks.length);
+
+  rawBankData.banks.forEach(bank => {
     let tempBank = {
       code: null,
       name: null,
@@ -33,20 +39,28 @@ function formatBanksResponseData(rawBankData) {
     tempBank.name = bankFromList.ShortName;
     tempBank.longName = bankFromList.LongName;
     tempBank.image = bank.image_url;
+    tempBank.order = 9999;
 
-    if (bank.custom_bank_data.length > 0 ) {
-      tempBank.name = bank.custom_bank_data[0].custom_bank_name ? bank.custom_bank_data[0].custom_bank_name : tempBank.name;
-      tempBank.image = bank.custom_bank_data[0].custom_bank_image_url ? bank.custom_bank_data[0].custom_bank_image_url : tempBank.image;
-      tempBank.color = bank.custom_bank_data[0].custom_bank_color ? bank.custom_bank_data[0].custom_bank_color : tempBank.color;
-      tempBank.order = bank.custom_bank_data[0].custom_bank_order ? bank.custom_bank_data[0].custom_bank_order : tempBank.order;
+    const userBank = getCustomBankData(rawBankData.userBanks, bank.user_banks.id);
+    const customBankData = userBank.customBankData[0];
+
+    if (typeof customBankData != 'undefined' ) {
+      tempBank.name = customBankData.custom_bank_name ? customBankData.custom_bank_name : tempBank.name;
+      tempBank.image = customBankData.custom_bank_image_url ? customBankData.custom_bank_image_url : tempBank.image;
+      tempBank.color = customBankData.custom_bank_color ? customBankData.custom_bank_color : tempBank.color;
+      tempBank.order = customBankData.custom_bank_order;
     }
 
-    tempBank.pix_keys = bank.pix_keys
+    tempBank.pix_keys = userBank.pix_keys
 
-    newBankData.push(tempBank);
+    if (tempBank.order > newBankData.length) {
+      newBankData.push(tempBank)
+    } else {
+      newBankData[tempBank.order] = tempBank;
+    }
   });
 
-  return newBankData;
+  return newBankData.filter(String);
 }
 
 module.exports = {
@@ -55,26 +69,30 @@ module.exports = {
     const { bank_code } = req.params;
     const where_conditions = bank_code? { code: bank_code } : {}
 
-    console.log(where_conditions)
-
     const user = await User.findByPk(user_id, {
-      include: {
-        model: Bank,
-        as: 'banks',
-        where: where_conditions,
-        include: [
-          {
-            model: PixKey,
-            as: 'pix_keys'
-          },
-          {
-            model: UserCustomBankData,
-            as: 'custom_bank_data'
-          }
-        ]
-      },
+      include: [
+        {
+          model: UserBanks,
+          as: 'userBanks',
+          include: [
+            {
+              model: UserCustomBankData,
+              as: 'customBankData'
+            },
+            {
+              model: PixKey,
+              as: 'pix_keys'
+            },
+          ]
+        },
+        {
+          model: Bank,
+          as: 'banks',
+          where: where_conditions,
+        }
+      ],
       order:[
-        ['banks', 'custom_bank_data', 'custom_bank_order', 'asc']
+        ['userBanks', 'customBankData', 'custom_bank_order', 'asc']
       ]
     });
 
@@ -82,7 +100,7 @@ module.exports = {
       return res.status(404).json({ error: 'User not found! ' });
     }
 
-    return res.status(200).json(formatBanksResponseData(user.banks));
+    return res.status(200).json(formatBanksResponseData(user));
   },
 
   async store(req, res) {
@@ -100,15 +118,14 @@ module.exports = {
       defaults: { code }
     });
 
-    await user.addBank(bank);
+    const [ user_banks ] = await user.addBank(bank);
 
     const custom_bank_data = await UserCustomBankData.create({
       custom_bank_name,
       custom_bank_color,
       custom_bank_image_url,
       custom_bank_order,
-      user_id,
-      bank_code: code,
+      user_banks_id: user_banks.id
     });
 
     return res.status(200).json(custom_bank_data);
@@ -119,6 +136,7 @@ module.exports = {
     const user_id = req.userId;
 
     try {
+
       const user = await User.findByPk(user_id);
 
       if(!user) {

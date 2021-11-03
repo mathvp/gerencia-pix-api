@@ -10,8 +10,8 @@ const UserCustomBankData  = require('../models/UserCustomBankData');
 const connection = new Sequelize(dbConfig);
 
 User.init(connection);
-Bank.init(connection);
 UserBanks.init(connection);
+Bank.init(connection);
 PixKey.init(connection);
 UserCustomBankData.init(connection);
 
@@ -19,5 +19,6 @@ User.associate(connection.models);
 Bank.associate(connection.models);
 PixKey.associate(connection.models);
 UserCustomBankData.associate(connection.models);
+UserBanks.associate(connection.models);
 
 module.exports = connection;

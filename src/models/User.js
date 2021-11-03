@@ -22,6 +22,9 @@ class User extends Model {
 
   static associate(models) {
     this.belongsToMany(models.Bank, { foreignKey: 'fk_user_id', through: 'user_banks', as: 'banks' });
+    this.hasMany(models.PixKey, { foreignKey: 'user_banks_id', as: 'pix_keys' });
+    this.hasMany(models.UserCustomBankData, { foreignKey: 'user_banks_id', as: 'customBankData' });
+    this.hasMany(models['user_banks'], { foreignKey: 'fk_user_id', as: 'userBanks' });
   }
 }
 

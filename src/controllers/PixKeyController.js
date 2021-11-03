@@ -1,15 +1,17 @@
 const User = require('../models/User');
 const PixKey = require('../models/PixKey');
+const getUserBank = require('../utils');
 
 module.exports = {
   async index(req, res) {
     const { bank_code } = req.params;
     const user_id = req.userId;
 
+    const userBank = await getUserBank(user_id, bank_code);
+
     const pix_keys = await PixKey.findAll({
       where: {
-        user_id,
-        bank_code
+        user_banks_id: userBank.id
       }
     });
 
@@ -25,21 +27,15 @@ module.exports = {
     const { value } = req.body;
     const user_id = req.userId;
 
-    const user = await User.findByPk(user_id, {
-      include: {
-        association: 'banks',
-        where: { 'code': bank_code }
-      }
-    });
+    const userBank = await getUserBank(user_id, bank_code);
 
-    if(!user) {
+    if(!userBank) {
       return res.status(400).json({ error: 'User or Bank not found! ' });
     }
 
     const pix_key = await PixKey.create({
       value,
-      user_id,
-      bank_code,
+      user_banks_id: userBank.id
     });
 
     return res.status(200).json(pix_key);
@@ -49,12 +45,13 @@ module.exports = {
     const { bank_code, pix_key_id } = req.params;
     const user_id = req.userId;
 
+    const userBank = await getUserBank(user_id, bank_code);
+
     try {
       const deleted = await PixKey.destroy({
         where: {
           id: pix_key_id,
-          user_id,
-          bank_code
+          user_banks_id: userBank.id
         }
       });
 
@@ -75,6 +72,8 @@ module.exports = {
     const { value } = req.body;
     const user_id = req.userId;
 
+    const userBank = await getUserBank(user_id, bank_code);
+
     try {
       await PixKey.update({
           value
@@ -82,8 +81,7 @@ module.exports = {
         {
           where: {
             id: pix_key_id,
-            user_id,
-            bank_code
+            user_banks_id: userBank.id
           }
       }).then(count => {
         if(count > 0) {
