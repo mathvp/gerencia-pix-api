@@ -27,4 +27,12 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     UserController.logout
   );
+
+  app.get(
+    `/api/${process.env.API_VERSION}/users/verify-token`,
+    [authJwt.verifyToken],
+    function(req, res) {
+      res.status(200).send({ msg: 'Ok' });
+    }
+  );
 }
