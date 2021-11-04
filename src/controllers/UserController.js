@@ -18,20 +18,25 @@ module.exports = {
       return res.status(400).send({ error: "Bad request" });
     }
 
-    // const salt = await bcrypt.genSalt(10);
-    // password = await bcrypt.hash(password, salt);
+    try {
+      await User.create({
+        first_name,
+        last_name,
+        email,
+        password
+      }).then((created_user) => {
+        return res.json(created_user);
+      });
 
-    await User.create({
-      first_name,
-      last_name,
-      email,
-      password
-    }).then((created_user) => {
-      return res.json(created_user);
-    }).catch((error) => {
-      console.log(error);
-      return res.status(500).send({ error: "Houve um erro ao criar o usuário" });
-    });
+    } catch (error) {
+      let error_message = 'Houve um erro ao criar o usuário';
+
+      if (error.errors[0].type === 'unique violation') {
+        error_message = `O email ${email} já está cadastrado. Utilize outro ou recupere sua senha...`;
+      }
+
+      return res.status(500).send({ error: error_message });
+    }
 
   },
 
