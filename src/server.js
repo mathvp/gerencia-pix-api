@@ -31,8 +31,8 @@ require('./routes/bank.routes')(app);
 require('./routes/user.routes')(app);
 require('./routes/pixKey.routes')(app);
 
-const HOSTNAME = '127.0.0.1';
-const PORT     = 8080;
+const HOSTNAME = '0.0.0.0';
+const PORT     = process.env.PORT || 8080;
 
 app.listen(PORT, HOSTNAME, () => {
   console.log(`Server running at http://${HOSTNAME}:${PORT}`);
