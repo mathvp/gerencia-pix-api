@@ -50,6 +50,122 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Realizar Login",
+        "description": "Rota responsável pelo login",
+        "tags": ["Usuários"],
+        "operationId": "login",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com Email e Senha do usuário",
+            "required": true,
+            "schema": {
+              "$ref":"#/components/schemas/UserLogin"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado (Usuário ou senha incorretos)"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "summary": "Realizar Logout",
+        "description": "Sair do Sistema",
+        "tags": ["Usuários"],
+        "operationId": "logout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout realizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/LogoutResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não Autorizado"
+          },
+          "403": {
+            "description": "Token não enviado"
+          }
+        }
+      }
+    },
+    "/users/verify-token": {
+      "post": {
+        "summary": "Verificar Token",
+        "description": "Rota utilizada para checar se um token é válido no Sistema",
+        "tags": ["Usuários"],
+        "operationId": "verifyToken",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token Válido",
+            "content": {
+              "application/json": {
+              }
+            }
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
           }
         }
       }
@@ -59,6 +175,15 @@
         "summary": "Listar todos os Bancos disponíveis",
         "description": "Essa rota é responsável pela listagem de Bancos utilizada no Dropdown e informações referentes aos bancos",
         "tags": ["Bancos"],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -72,25 +197,29 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
           }
         }
       }
     },
-    "/users/{user_id}/banks": {
+    "/users/banks": {
       "post": {
-        "summary": "Salvar um Banco para um usuário específico referenciado pelo user_id",
-        "description": "",
+        "summary": "Salvar um Banco para um usuário",
+        "description": "O id do usuário está contido no Token, não é necessário enviá-lo por parâmetro, basta enviar o x-access-token no Header",
         "tags": ["Bancos"],
         "operationId": "addUserBank",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
-            "schema": {
-              "type":"number"
-            }
+            "type": "string"
           },
           {
             "in": "body",
@@ -124,22 +253,35 @@
               }
             }
           },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
           "404": {
             "description": "Usuário não encontrado"
           }
         }
       },
       "get": {
-        "summary": "Retorna uma lista de Bancos pertencentes à um usuário específico referenciado pelo user_id",
-        "description": "",
+        "summary": "Retorna os Bancos pertencentes à um usuário",
+        "description": "Caso nenhum código de Banco seja passado é retornado todos os Bancos pertencentes ao usuário",
         "tags": ["Bancos"],
-        "operationId": "getUserBank",
+        "operationId": "getUserBanks",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco desejado",
+            "required": false,
             "schema": {
               "type":"number"
             }
@@ -159,13 +301,165 @@
               }
             }
           },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
           "404": {
-            "description": "Usuário não encontrado"
+            "description": "Banco não encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar a ordenação dos Bancos de um usuário",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "orderUserBanks",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "newOrders",
+            "description": "Array de Objetos com o código e nova ordem dos Bancos",
+            "required": true,
+            "schema": {
+              "type": "array",
+                "items": {
+                  "$ref":"#/components/schemas/NewOrderBankRequest"
+                }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                  "items": {
+                    "$ref":"#/components/schemas/NewOrderBankRequest"
+                  }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Usuário ou Banco não encontrado"
           }
         }
       }
     },
-    "/users/{user_id}/banks/{bank_code}/custom": {
+    "/users/banks/{bank_code}": {
+      "put": {
+        "summary": "Atualizar um Banco pertencente à um usuário",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "updateUserBank",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco à ser atualizado",
+            "required": true,
+            "schema": { "type":"number" }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com os valores do Banco à ser atualizado",
+            "required": true,
+            "schema": {
+              "$ref":"#/components/schemas/UserUpdateBankRequest"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/UserUpdateBankRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Usuário ou Banco não encontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Exclui um Banco pertencente à um usuário",
+        "description": "",
+        "tags": ["Bancos"],
+        "operationId": "deleteUserBank",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco à ser excluído",
+            "required": true,
+            "schema": { "type":"number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Banco excluído com sucesso"
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Usuário ou Banco não encontrado"
+          }
+        }
+      }
+    },
+    "/users/banks/{bank_code}/custom": {
       "get": {
         "summary": "Retorna os dados personalizados de um Banco para um Usuário",
         "description": "",
@@ -173,11 +467,11 @@
         "operationId": "getCustomBankData",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
-            "schema": { "type":"number" }
+            "type": "string"
           },
           {
             "in": "path",
@@ -200,23 +494,30 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Banco não encontrado"
           }
         }
       },
       "post": {
-        "summary": "Salvar os dados Personalizados de um Banco para um usuário específico referenciado pelo user_id",
+        "summary": "Salvar os dados Personalizados de um Banco para um usuário específico",
         "description": "",
         "tags": ["Bancos"],
         "operationId": "addCustomBankData",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
-            "schema": {
-              "type":"number"
-            }
+            "type": "string"
           },
           {
             "in": "path",
@@ -259,27 +560,31 @@
               }
             }
           },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
           "404": {
             "description": "Usuário ou Banco não encontrado"
           }
         }
       }
     },
-    "/users/{user_id}/banks/{bank_code}/pix-keys": {
+    "/users/banks/{bank_code}/pix-keys": {
       "post": {
-        "summary": "Salvar uma Chave Pix para um usuário específico referenciado pelo user_id",
+        "summary": "Salvar uma Chave Pix para um usuário específico",
         "description": "",
         "tags": ["Chave Pix"],
         "operationId": "addPixKey",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
-            "schema": {
-              "type":"number"
-            }
+            "type": "string"
           },
           {
             "in": "path",
@@ -327,6 +632,12 @@
               }
             }
           },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
           "404": {
             "description": "Usuário ou Banco não encontrado"
           }
@@ -339,13 +650,11 @@
         "operationId": "getUserBankPixKeys",
         "parameters": [
           {
-            "in": "path",
-            "name": "user_id",
-            "description": "ID do usuário dono do recurso",
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
             "required": true,
-            "schema": {
-              "type":"number"
-            }
+            "type": "string"
           },
           {
             "in": "path",
@@ -371,8 +680,131 @@
               }
             }
           },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
           "404": {
             "description": "Usuário não encontrado"
+          }
+        }
+      }
+    },
+    "/users/banks/{bank_code}/{pix_key_id}": {
+      "put": {
+        "summary": "Atualizar uma Chave Pix de um Banco para um Usuário",
+        "description": "",
+        "tags": ["Chave Pix"],
+        "operationId": "updatePixKey",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco em que a Chave Pix será atualizada",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "path",
+            "name": "pix_key_id",
+            "description": "Id da Chave a ser atualizada",
+            "required": true,
+            "schema": {
+              "type":"number"
+            }
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto com o valor da Chave Pix que será atualizada",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": { "type": "string" }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "value": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chave Pix atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/PixKey"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Chave Pix ou Banco não encontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Exclui uma Chave Pix de um Banco para um Usuário",
+        "description": "",
+        "tags": ["Chave Pix"],
+        "operationId": "deleteUserPixKey",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-access-token",
+            "description": "Token de Acesso",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "bank_code",
+            "description": "Código do Banco em que a Chave Pix será excluída",
+            "required": true,
+            "schema": { "type":"number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chave Pix excluída com sucesso"
+          },
+          "401": {
+            "description": "Token Inválido"
+          },
+          "403": {
+            "description": "Token não enviado"
+          },
+          "404": {
+            "description": "Chave Pix ou Banco não encontrado"
           }
         }
       }
@@ -399,6 +831,26 @@
           "password": { "type": "string" },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "accessToken": { "type": "string" }
+        }
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
         }
       },
       "Bank": {
@@ -462,6 +914,27 @@
           "custom_bank_order": {
             "type": "number"
           }
+        }
+      },
+      "UserUpdateBankRequest": {
+        "type": "object",
+        "properties": {
+          "custom_bank_name": {
+            "type": "string"
+          },
+          "custom_bank_color": {
+            "type": "string"
+          },
+          "custom_bank_image_url": {
+            "type": "string"
+          }
+        }
+      },
+      "NewOrderBankRequest": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "number" },
+          "order": { "type": "number" }
         }
       },
       "UserBanksResponse": {
