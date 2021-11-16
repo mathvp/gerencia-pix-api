@@ -5,8 +5,12 @@
   "main": "server.js",
   "scripts": {
     "pretest": "NODE_ENV=test npx sequelize-cli db:migrate",
-    "test": "NODE_ENV=test jest",
+    "test": "NODE_ENV=test jest --verbose",
     "posttest": "NODE_ENV=test npx sequelize-cli db:migrate:undo:all",
+    "test:unit": "NODE_ENV=test jest --verbose ./__tests__/unit",
+    "pretest:integration": "NODE_ENV=test npx sequelize-cli db:migrate",
+    "test:integration": "NODE_ENV=test jest --verbose ./__tests__/integration",
+    "posttest:integration": "NODE_ENV=test npx sequelize-cli db:migrate:undo:all",
     "dev": "nodemon src/server.js --ignore __tests__",
     "build": "npx sequelize-cli db:migrate",
     "start": "node ./src/server.js"
