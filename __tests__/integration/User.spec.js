@@ -15,7 +15,6 @@ function createUser(userData) {
 
 describe("POST /users", () => {
   beforeEach(() => {
-    console.log(sequelize.models)
     Object.values(sequelize.models).forEach(async (model) => {
       await model.destroy({
         where: {},
@@ -38,7 +37,6 @@ describe("POST /users", () => {
     expect(response.body).toHaveProperty('last_name', 'Vieira');
     expect(response.body).toHaveProperty('email', 'mathvp@teste.com');
     expect(response.body).toHaveProperty('password');
-    expect(response.body).not.toHaveProperty('propriedadeInvalida');
   });
 
   it("should encrypt user password", async () => {
@@ -88,8 +86,6 @@ describe("POST /users/login", () => {
         email: 'pedrodelara@globo.com',
         password: 'pedroGlobo456'
       });
-
-      console.log(loginResponse)
 
     expect(loginResponse.status).toBe(401);
     expect(loginResponse.body).not.toHaveProperty('accessToken')
